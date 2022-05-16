@@ -31,6 +31,26 @@ const TaskController = {
         }
     },
 
+    findByIdTask: async ( req, res, next ) => {
+        try{
+            if( !req.params.idTask ){
+                return res.status(400).json({ Error: 'Voce deve informar o Id da Tarefa (idTask)' });
+            }
+            let user = req.userId;
+            let idTask = req.params.idTask;
+            let searchedTask = await taskModel.findById( idTask );
+
+            if( !searchedTask || searchedTask.user != user ){
+                return res.status(404).json({Error: 'Tarefa não encontrada!'});
+            }else{
+                res.status(200).json({result: searchedTask});
+            }
+
+        }catch( error ){
+            res.status(500).json({ error: true, message: MSG_ERRO_500 })
+        }
+    },
+
     alterStatus: async ( req, res, next ) =>{
         try{
             if( !req.query.idTask ){
@@ -51,6 +71,27 @@ const TaskController = {
                 return res.status(404).json({Error: 'Tarefa não encontrada!'});
             }
 
+        }catch( error ){
+            res.status(500).json({ error: true, message: MSG_ERRO_500 })
+        }
+    },
+
+    alterPriority: async ( req, res, next ) => {
+        try{
+            if( !req.query.idTask ){
+                return res.status(400).json({ Error: 'Voce deve informar o Id da Tarefa (idTask)' });
+            }
+            if( !req.query.newPriority ){
+                return res.status(400).json({ Error: 'Nova prioridade não informada' });
+            }
+            let user = req.userId;
+            let { idTask, newPriority } = req.query;
+            let searchedTask = await taskModel.findById( idTask );
+
+            if( searchedTask && searchedTask.user == user ){
+                let result = await taskModel.alterPriority(searchedTask, newPriority);
+                result.updated ? res.status(240).json() : res.status(400).json({ message: result.content.message });
+            }
         }catch( error ){
             res.status(500).json({ error: true, message: MSG_ERRO_500 })
         }

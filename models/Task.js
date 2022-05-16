@@ -31,6 +31,11 @@ const taskModel = {
         return result;
     },
 
+    updatePriorityById( idTask, newPriority ){
+        let result = taskModelOperator.updateOne({_id: idTask},{priority: newPriority});
+        return result;
+    },
+
     async alterStatus( task, newStatus ){
         let oldStatus  = task.status;
         let msgErro = {
@@ -95,6 +100,21 @@ const taskModel = {
                     }
                 }
         }
+    },
+
+    async alterPriority( task, newPriority ){
+        let oldstatus = task.status;
+
+        if( oldstatus != 'new' || oldstatus != 'in-progress' ){
+            return{
+                updated: false,
+                content:{
+                    message: 'Só é possível alterar a prioridade de uma tarefa nova ou que esteja em andamento'
+                }
+            }
+        }
+        await this.updatePriorityById( task._id, newPriority );
+        return { updated: true };
     },
 
     deleteById( taskId, userId ){
