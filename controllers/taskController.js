@@ -6,11 +6,11 @@ const MSG_ERRO_500 = 'Houve um erro inesperado, contacte o administrador';
 const TaskController = {
 
     // Cria uma nova tarefa para o usuário
-    newInsert: async (req, res) => {
+    newInsert: async ( req, res, next ) => {
         try{
-            const { title, description, priority } = req.body;
-            const status = 1;
-            const user = req.userId;
+            let { title, description, priority } = req.body;
+            let status = 'new';
+            let user = req.userId;
             let task = { title, description, priority, status };
             let result = await taskModel.create( task, user );
 
@@ -21,7 +21,7 @@ const TaskController = {
     },
 
     // Lista todas as tarefas do usuário
-    listByUser: async ( req, res ) => {
+    listByUser: async ( req, res, next ) => {
         try{
             let user = req.userId;
             let result = await taskModel.listByUser( user );
@@ -31,8 +31,33 @@ const TaskController = {
         }
     },
 
+    alterStatus: async ( req, res, next ) =>{
+        try{
+            if( !req.query.idTask ){
+                return res.status(400).json({ Error: 'Voce deve informar o Id da Tarefa (idTask)' });
+            }
+            if( !req.query.newStatus ){
+                return res.status(400).json({ Error: 'Novo status não informado' });
+            }
+            let user = req.userId;
+            let { idTask, newStatus } = req.query;
+            let searchedTask = await taskModel.findById( idTask );
+
+            if( searchedTask && searchedTask.user == user ){
+               // Função de alterar o status
+                let result = await taskModel.alterStatus( searchedTask, newStatus );
+                result.updated ? res.status(204).json() : res.status(400).json({ message: result.content.message });
+            }else{
+                return res.status(404).json({Error: 'Tarefa não encontrada!'});
+            }
+
+        }catch( error ){
+            res.status(500).json({ error: true, message: MSG_ERRO_500 })
+        }
+    },
+
     // Realiza a remoção de tarefa pelo Id da Tarefa e pelo usuário do Token
-    removeById: async ( req, res ) => {
+    removeById: async ( req, res, next ) => {
         try{
             // Caso o usuário não informe o Id da Tarefa
             if( !req.query.idTask ){

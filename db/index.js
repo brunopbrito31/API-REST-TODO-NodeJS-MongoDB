@@ -6,8 +6,8 @@ mongoose.connect(url.database_string_conn);
 const taskSchema = new mongoose.Schema({
     title: {type: String, required: true},
     description: {type: String, required: true},
-    priority: {type: String, required: true},
-    status:{type:Number, required: true},
+    priority: {type: String, required: true, enum:['low', 'medium', 'high']},
+    status:{type:String, required: true, enum:['new', 'in-progress', 'canceled', 'complete', 'inactive']},
     user: {type:String, required:false}
 });
 

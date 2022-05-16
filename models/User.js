@@ -36,7 +36,7 @@ const userModel = {
     },
 
     async generateJWT( user, secret ){
-        let token =  await jwt.sign(
+        let token =  jwt.sign(
             {
                 id: user.id,
                 login: user.login,

@@ -33,9 +33,9 @@ const userController = {
         }
     },
 
-    login: async (req, res, next) => {
+    login: async ( req, res, next ) => {
 
-        if( !req.body.login || !req.body.password ){
+        if( !req.body?.login || !req.body?.password ){
             return res.status(401).json('Você Deve Informar o Usuário e Senha');
         }
         const { login, password } = req.body;

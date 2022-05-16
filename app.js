@@ -5,6 +5,7 @@ const express = require('express'),
     handlerError = require('./middlewares/handlerError'),
     cors = require('cors');
 
+app.use(express.json());
 app.use((req, res, next) => {
 	//Qual site tem permissão de realizar a conexão, no exemplo abaixo está o "*" indicando que qualquer site pode fazer a conexão
     res.header("Access-Control-Allow-Origin", "*");
