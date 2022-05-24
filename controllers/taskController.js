@@ -31,6 +31,18 @@ const TaskController = {
         }
     },
 
+    // Lista todas as tarefas do usuário (Com Paginação);
+    listByUserWithPagination: async ( req, res, next ) => {
+        try{
+            let user = req.userId;
+            let { page, limit } = req.query;
+            let result = await taskModel.listByUserwithPagination( user, page, limit );
+            res.status(200).json({ result: result });
+        }catch( error ){
+            res.status(500).json({ error: true, message: error.message })
+        }
+    },
+
     findByIdTask: async ( req, res, next ) => {
         try{
             if( !req.params.idTask ){

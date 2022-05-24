@@ -8,6 +8,26 @@ const taskModel = {
         return result;
     },
 
+    async listByUserwithPagination( userId, page=1, limit=5 ){
+        let result = await taskModelOperator.find({ user: userId }).skip( (page-1)*limit ).limit(limit*1);
+
+        let qtPages = (await taskModelOperator.find({ user: userId }).count())/limit;
+        if( qtPages !== parseInt(qtPages) ){
+            qtPages = (parseInt(qtPages) == qtPages +1) ? 
+                parseInt(qtPages) : (parseInt(qtPages) + 1);
+        }
+
+        let finalResultObject = {
+            pagination:{
+                page: page,
+                total: qtPages
+            },
+            return: result
+        }
+
+        return finalResultObject;
+    },
+
     findById( idTask ){
         let result = taskModelOperator.findById(idTask);
         return result;

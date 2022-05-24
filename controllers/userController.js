@@ -34,6 +34,8 @@ const userController = {
     },
 
     login: async ( req, res, next ) => {
+        console.log('Tentativa de login')
+        console.log(req.body);
 
         if( !req.body?.login || !req.body?.password ){
             return res.status(401).json('Você Deve Informar o Usuário e Senha');
