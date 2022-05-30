@@ -6,6 +6,7 @@ const DecodeToken   = require('../middlewares/decodeToken');
 const TaskValidation= require('../validations/task');
 
 exports.taskRoutes = ( routes ) =>{
+    routes.get('/tasks/report-download', AuthValidator, DecodeToken, TaskController.getDownload);
     routes.get('/tasks',    AuthValidator, DecodeToken, TaskController.listByUser);
     routes.get('/tasks-pageable', AuthValidator, DecodeToken, TaskController.listByUserWithPagination);
     routes.get('/tasks:idTask', AuthValidator, DecodeToken, TaskController.findByIdTask);

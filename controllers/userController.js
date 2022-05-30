@@ -48,14 +48,16 @@ const userController = {
             return res.status(401).json('Acesso não autorizado: Usuário ou senha inválido(s)');
         }
 
-        if( userModel.isValidPassword( searchedUser.password, password ) ){
+        let validPassword = await userModel.isValidPassword( searchedUser.password, password );
+
+        if( validPassword ){
             let tokenUser = await userModel.generateJWT( searchedUser, secret );
             res.status(200).json(tokenUser);
         }else{
             return res.status(401).json('Acesso não autorizado: Usuário ou senha inválido(s)');
         }
 
-    }
+    },
 }
 
 module.exports = userController;

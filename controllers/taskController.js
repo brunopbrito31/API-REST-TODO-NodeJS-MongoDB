@@ -134,6 +134,53 @@ const TaskController = {
         }catch(error){
             res.status(500).json({ message: error.message });
         }
+    },
+
+    // Realiza o download de um relatório com todas as tarefas do usuário 
+    getDownload: async (req, res, next) =>{
+        const db = require('../db');
+        // Id de usuário mockado 
+        let userId = req.userId;
+        
+        const taskModelOperator = db.models.Tasks;
+        const createCsvWriter = require('csv-writer').createObjectCsvWriter;
+        console.log('Chegou no endpoint de download');
+        let csvWriter = createCsvWriter({
+            path:'./report-user.csv',
+            header:[
+                {id: 'title', title: 'TITULO'},
+                {id: 'description', title: 'DESCRICAO'},
+                {id: 'priority' , title: 'PRIORIDADE'},
+                {id: 'status' , title: 'STATUS'}
+            ]
+        });
+        
+        let taskCursor = taskModelOperator.find({ user: userId },
+        {
+            title:1, 
+            description:1, 
+            priority:1, 
+            status:1 
+        }).cursor();
+        
+        taskCursor.on('data', async ( chunk )=>{
+            console.log('Escrevendo');
+            taskCursor.pause();
+            await csvWriter.writeRecords([
+                {
+                    title: chunk.title, 
+                    description: chunk.description, 
+                    priority: chunk.priority, 
+                    status: chunk.status
+                }
+            ]);
+            taskCursor.resume();
+            console.log('.:Done')
+        })
+
+        taskCursor.on('end', ()=>{
+            res.download('./report-user.csv');
+        })
     }
 }
 
